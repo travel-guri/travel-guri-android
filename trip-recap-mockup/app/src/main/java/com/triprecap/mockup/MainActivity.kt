@@ -126,7 +126,7 @@ private fun BoxScope.App(gearMonitor: GearMonitor) {
     Cluster(speed = if (driving) 62 else 0, gear = gear, driving = driving)
 
     when {
-        driving -> DrivingScreen(state.recording, km)
+        driving -> DrivingScreen(state.recording, km, animateMarker = sdkUnavailable)
         state.phase != Phase.NORMAL -> RecapReadyScreen(done = state.phase == Phase.DONE) {
             state.phase = Phase.NORMAL
             state.openTrip("gangneung", Tab.RECAP)

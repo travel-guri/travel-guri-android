@@ -23,6 +23,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathMeasure
+import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -32,11 +34,22 @@ import androidx.compose.ui.unit.sp
 // 1200x560 루트 Box 안에서 호출. 계기판(왼쪽 172) 오른쪽 전체를 쓴다.
 
 @Composable
-fun BoxScope.DrivingScreen(recording: Boolean, km: Int) {
+fun BoxScope.DrivingScreen(recording: Boolean, km: Int, animateMarker: Boolean) {
+    val route = ROUTE_DRIVING
+    val routeMeasure = remember(route) {
+        PathMeasure().apply { setPath(PathParser().parsePathString(route.d).toPath(), false) }
+    }
+    val markerDistance = remember { Animatable(0f) }
+    val simulatedDistance = km.coerceIn(0, 24) * 16f
+    LaunchedEffect(animateMarker, recording, simulatedDistance) {
+        if (animateMarker && recording) markerDistance.animateTo(simulatedDistance, tween(600))
+        else markerDistance.snapTo(0f)
+    }
+
     // 경로 지도
     Box(Modifier.at(172, 0, 578, 560).clipToBounds().background(C.Land)) {
         Img(R.drawable.map_driving, Modifier.fillMaxSize(), crop = true)
-        RouteLine(ROUTE_DRIVING, outline = C.Dark, outlineWidth = 13f)
+        RouteLine(route, outline = C.Dark, outlineWidth = 13f)
         Box(
             Modifier.at(20, 20, 176, 66).clip(RoundedCornerShape(12.dp)).background(Color(0xF20B100E))
                 .border(1.dp, C.Green, RoundedCornerShape(12.dp))
@@ -47,7 +60,8 @@ fun BoxScope.DrivingScreen(recording: Boolean, km: Int) {
         }
         T("© OpenStreetMap contributors", 9, Color(0x73FFFFFF), modifier = Modifier.at(24, 474))
         // 내 위치 · 떠나구리 (52x66): 진행 방향 삼각형 + 초록 테두리 원 안의 얼굴
-        Box(Modifier.at(258.5, 430, 52, 66)) {
+        val marker = routeMeasure.getPosition(markerDistance.value)
+        Box(Modifier.at(route.dx + marker.x - 26, route.dy + marker.y - 40, 52, 66)) {
             Canvas(Modifier.at(17, 0, 18, 12)) {
                 val tri = androidx.compose.ui.graphics.Path().apply {
                     moveTo(size.width / 2, 0f); lineTo(size.width, size.height); lineTo(0f, size.height); close()

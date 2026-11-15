@@ -2,7 +2,6 @@ package com.triprecap.mockup
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -150,13 +149,8 @@ fun BoxScope.MapDialogs(state: AppState, onStartTrip: () -> Unit, onEndTrip: () 
         }
         Dialog.PhotoQr -> Modal(87, 386, onDismiss = state::close) {
             ModalHeader("휴대폰으로 사진 추가", "휴대폰에서 여행 전용 QR을 스캔해 사진을 올려요.")
-            Box(
-                Modifier.at(153, 106, 160, 166).clip(RoundedCornerShape(12.dp)).background(C.Base)
-                    .border(1.dp, C.Line, RoundedCornerShape(12.dp))
-            ) {
-                T("QR", 30, C.Green, bold = true, modifier = Modifier.at(60, 48))
-                T("시연용 표시 영역", 13, modifier = Modifier.at(29, 96))
-            }
+            Img(R.drawable.demo_photo_qr, Modifier.at(152, 106, 162, 162))
+            T("시연용 QR", 13, C.Muted, modifier = Modifier.at(204, 277))
             Btn("닫기", Modifier.at(24, 317, 418, 48), textSize = 16, onClick = state::close)
         }
         is Dialog.MapPlace -> {
