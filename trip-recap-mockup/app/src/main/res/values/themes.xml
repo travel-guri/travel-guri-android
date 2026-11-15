@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.TripRecap" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#FF121614</item>
+        <item name="android:statusBarColor">#FF121614</item>
+    </style>
+</resources>
